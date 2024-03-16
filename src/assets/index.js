@@ -1,6 +1,6 @@
 import createCampaign from './create-campaign.svg';
 import dashboard from './dashboard.svg';
-import logo from './logo.svg';
+import logo from './thirdweb.png';
 import logout from './logout.svg';
 import payment from './payment.svg';
 import profile from './profile.svg';
@@ -12,6 +12,11 @@ import menu from './menu.svg';
 import money from './money.svg';
 import loader from './loader.svg';
 import thirdweb from './thirdweb.png';
+import mina from './mina.png';
+import bnb from './bnb.svg';
+import success from './success.svg'
+import switchicon from './switch.svg';
+
 
 export {
   tagType,
@@ -28,4 +33,8 @@ export {
   money,
   loader,
   thirdweb,
+  mina,
+  bnb,
+  success,
+  switchicon
 };

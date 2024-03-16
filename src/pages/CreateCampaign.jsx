@@ -1,118 +1,193 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { ethers } from 'ethers';
-
-import { useStateContext } from '../context';
-import { money } from '../assets';
-import { CustomButton, FormField, Loader } from '../components';
-import { checkIfImage } from '../utils';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { ethers } from "ethers";
+import { useStateContext } from "../context";
+import { money } from "../assets";
+import {
+  TextField,
+  FormControl,
+  Input,
+  InputLabel,
+  InputAdornment,
+  OutlinedInput,
+} from "@mui/material";
+import { CustomButton, FormField, Loader } from "../components";
+import FormSelect from "../components/FormSelect";
+import SucessNoti from "../components/SuccessNoti";
+import { bnb, mina, logo, switchicon } from "../assets";
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading1, setIsSuccess] = useState(false);
   const { createCampaign } = useStateContext();
   const [form, setForm] = useState({
-    name: '',
-    title: '',
-    description: '',
-    target: '', 
-    deadline: '',
-    image: ''
+    // initiateTransfer: "",
+    to: "",
+    amount: "",
+    targetChain:
+      "8af43cf261ea10c761ec540f92aafb76aec56d8d74f77c836f3ab1de5ce4eac5",
   });
+  useEffect(() => {
+    if (isLoading1) {
+      const timeout = setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
+
+      // Cleanup the timeout if the component is unmounted before three seconds
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading1]);
 
   const handleFormFieldChange = (fieldName, e) => {
-    setForm({ ...form, [fieldName]: e.target.value })
-  }
+    console.log(fieldName);
+    setForm({ ...form, [fieldName]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    checkIfImage(form.image, async (exists) => {
-      if(exists) {
-        setIsLoading(true)
-        await createCampaign({ ...form, target: ethers.utils.parseUnits(form.target, 18)})
-        setIsLoading(false);
-        navigate('/');
-      } else {
-        alert('Provide valid image URL')
-        setForm({ ...form, image: '' });
-      }
-    })
-  }
+    try {
+      setIsLoading(true);
+      await createCampaign({
+        ...form,
+        target: ethers.utils.parseUnits("0.7"),
+      });
+      setIsLoading(false);
+    } catch (error) {}
+    setIsSuccess(true);
+  };
+
+  const listChain = [
+    {
+      value: "BNB",
+      label: "BNB Chain",
+      src: bnb,
+    },
+    {
+      value: "MINA ",
+      label: "MINA Chain",
+      src: mina,
+    },
+  ];
+  const listChainMINA = [
+    {
+      value: "MINA",
+      label: "MINA",
+      src: mina,
+    },
+  ];
 
   return (
-    <div className="bg-[#1c1c24] flex justify-center items-center flex-col rounded-[10px] sm:p-10 p-4">
-      {isLoading && <Loader />}
-      <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#3a3a43] rounded-[10px]">
-        <h1 className="font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px] text-white">Start a Campaign</h1>
-      </div>
-
-      <form onSubmit={handleSubmit} className="w-full mt-[65px] flex flex-col gap-[30px]">
-        <div className="flex flex-wrap gap-[40px]">
-          <FormField 
-            labelName="Your Name *"
-            placeholder="John Doe"
-            inputType="text"
-            value={form.name}
-            handleChange={(e) => handleFormFieldChange('name', e)}
-          />
-          <FormField 
-            labelName="Campaign Title *"
-            placeholder="Write a title"
-            inputType="text"
-            value={form.title}
-            handleChange={(e) => handleFormFieldChange('title', e)}
-          />
+    <div className="flex justify-center items-center gap-16 mt-[10px] flex-row  rounded-[10px] ">
+      <section className=" flex w-[535px] bg-white justify-center items-center flex-col rounded-[10px] sm:p-8 p-4">
+        {isLoading && <Loader />}
+        {isLoading1 && <SucessNoti />}
+        <div className="flex flex-row align-middle items-center gap-4 ">
+          <div className={`rounded-full w-[100px] h-[100px] bg-[#f1f1f4] `}>
+            <img
+              src={logo}
+              alt="fund_logo"
+              className={"w-[100px] h-[100px] rounded-full grayscale"}
+            />
+          </div>
+          <div className="flex justify-center flex-col items-center p-[10px] sm:min-w-[px]  rounded-[10px]">
+            <h1 className="font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px] ">
+              Start Mina CrossChain
+            </h1>
+            <h2 className="font-epilogue sm:text-[20px] text-[18px] leading-[23px] ">
+              Cross-Chain Bridge App
+            </h2>
+          </div>
         </div>
 
-        <FormField 
-            labelName="Story *"
-            placeholder="Write your story"
-            isTextArea
-            value={form.description}
-            handleChange={(e) => handleFormFieldChange('description', e)}
-          />
+        <form
+          onSubmit={handleSubmit}
+          className="w-full mt-[25px] flex flex-col gap-[30px] "
+        >
+          <div className="border-slate-200  border-y-2">
+            <div className="flex  items-center gap-[10px]  my-[20px]  ">
+              <FormSelect
+                labelName="Form*"
+                value={form.fromchain}
+                defaultValue="BNB"
+                handleChange={(e) => handleFormFieldChange("fromchain", e)}
+                listItem={listChain}
+              ></FormSelect>
+              <div className="cursor-pointer text-white shadow flex justify-center items-center transition-all bg-[#1dc071] shadow-lg rounded-full w-[120px] h-[50px]">
+                <img className="w-1/2 " src={switchicon} alt="Image"></img>
+              </div>
 
-        <div className="w-full flex justify-start items-center p-4 bg-[#8c6dfd] h-[120px] rounded-[10px]">
-          <img src={money} alt="money" className="w-[40px] h-[40px] object-contain"/>
-          <h4 className="font-epilogue font-bold text-[25px] text-white ml-[20px]">You will get 100% of the raised amount</h4>
-        </div>
+              <FormSelect
+                labelName="To*"
+                defaultValue="MINA"
+                value={form.tochain}
+                handleChange={(e) => handleFormFieldChange("tochain", e)}
+                listItem={listChain}
+              ></FormSelect>
+            </div>
+          </div>
 
-        <div className="flex flex-wrap gap-[40px]">
-          <FormField 
-            labelName="Goal *"
-            placeholder="ETH 0.50"
-            inputType="text"
-            value={form.target}
-            handleChange={(e) => handleFormFieldChange('target', e)}
-          />
-          <FormField 
-            labelName="End Date *"
-            placeholder="End Date"
-            inputType="date"
-            value={form.deadline}
-            handleChange={(e) => handleFormFieldChange('deadline', e)}
-          />
-        </div>
+          <div className="flex flex-col  gap-[30px]">
+            <FormSelect
+              labelName="Select Token"
+              value={form.token}
+              defaultValue="MINA"
+              handleChange={(e) => handleFormFieldChange("tox", e)}
+              listItem={listChainMINA}
+            ></FormSelect>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="outlined-adornment-amount">
+                To Address
+              </InputLabel>
+              <OutlinedInput
+                onChange={(e) => handleFormFieldChange("to", e)}
+                id="outlined-adornment-address"
+                startAdornment={
+                  <InputAdornment position="start"></InputAdornment>
+                }
+                label="Address Mina"
+              />
+            </FormControl>
 
-        <FormField 
-            labelName="Campaign image *"
-            placeholder="Place image URL of your campaign"
-            inputType="url"
-            value={form.image}
-            handleChange={(e) => handleFormFieldChange('image', e)}
-          />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="outlined-adornment-amount">
+                Amount
+              </InputLabel>
+              <OutlinedInput
+                onChange={(e) => handleFormFieldChange("amount", e)}
+                id="outlined-adornment-amount"
+                placeholder="Mina 3"
+                startAdornment={
+                  <InputAdornment position="start"></InputAdornment>
+                }
+                label="Amount Mina"
+              />
+            </FormControl>
+          </div>
 
-          <div className="flex justify-center items-center mt-[40px]">
-            <CustomButton 
+          <div className="w-full flex justify-start items-center p-2 bg-[#8c6dfd] h-[100px] rounded-[10px]">
+            <img
+              src={money}
+              alt="money"
+              className="w-[40px] h-[40px] object-contain"
+            />
+            <h4 className="font-epilogue font-bold text-[20px] text-white ml-[20px]">
+              You will stake to get 10% of the staking amount
+            </h4>
+          </div>
+
+          <div className="flex justify-center items-center mt-[5px]">
+            <CustomButton
               btnType="submit"
-              title="Submit new campaign"
+              title="Swap "
               styles="bg-[#1dc071]"
             />
           </div>
-      </form>
+        </form>
+      </section>
     </div>
-  )
-}
+  );
+};
 
-export default CreateCampaign
+export default CreateCampaign;

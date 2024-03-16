@@ -1,23 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { ChainId, ThirdwebProvider } from '@thirdweb-dev/react';
-import { Goerli, Sepolia,BaseGoerli } from "@thirdweb-dev/chains";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
+import { BinanceTestnet } from "@thirdweb-dev/chains";
 
-import { StateContextProvider } from './context';
-import App from './App';
-import './index.css';
+import { StateContextProvider } from "./context";
+import App from "./App";
+import "./index.css";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <ThirdwebProvider 
-    activeChain={Sepolia}
-    clientId="46e45921b01f4ec250d4744da0d00a1b"> 
+  <ThirdwebProvider
+    activeChain={BinanceTestnet}
+    clientId="67f48a410b7f8f44899df5f845d864b6"
+  >
     <Router>
       <StateContextProvider>
         <App />
       </StateContextProvider>
     </Router>
-  </ThirdwebProvider> 
-)
+  </ThirdwebProvider>
+);
